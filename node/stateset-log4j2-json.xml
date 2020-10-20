@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info" packages="io.stateset.logging">
+
+    <Properties>
+        <Property name="log-path">logs</Property>
+        <Property name="log-name">node-${hostName}</Property>
+        <Property name="archive">${log-path}/archive</Property>
+    </Properties>
+
+    <ThresholdFilter level="trace"/>
+
+    <Appenders>
+        <Console name="Console-Appender" target="SYSTEM_OUT">
+            <CorditeJsonLayout pattern="%msg" />
+        </Console>
+
+        <!-- Will generate up to 10 log files for a given day. During every rollover it will delete
+             those that are older than 60 days, but keep the most recent 10 GB -->
+        <RollingFile name="RollingFile-Appender"
+                     fileName="${log-path}/${log-name}.log"
+                     filePattern="${archive}/${log-name}.%d{yyyy-MM-dd}-%i.log.gz">
+
+            <PatternLayout pattern="[%-5level] %d{ISO8601}{GMT+0} [%t] %c{1} - %msg%n"/>
+
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="10MB"/>
+            </Policies>
+
+            <DefaultRolloverStrategy min="1" max="10">
+                <Delete basePath="${archive}" maxDepth="1">
+                    <IfFileName glob="${log-name}*.log.gz"/>
+                    <IfLastModified age="60d">
+                        <IfAny>
+                            <IfAccumulatedFileSize exceeds="2 GB"/>
+                        </IfAny>
+                    </IfLastModified>
+                </Delete>
+            </DefaultRolloverStrategy>
+
+        </RollingFile>
+
+        <RollingFile name="RollingFile-Nmc-Appender"
+                     fileName="${log-path}/${log-name}-nmc.log"
+                     filePattern="${archive}/${log-name}.%d{yyyy-MM-dd}-%i.log.gz">
+
+            <PatternLayout pattern="[%-5level] %d{ISO8601}{GMT+0} [%t] %c{1} - %msg%n"/>
+
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="10MB"/>
+            </Policies>
+
+            <DefaultRolloverStrategy min="1" max="5">
+                <Delete basePath="${archive}" maxDepth="1">
+                    <IfFileName glob="${log-name}*.log.gz"/>
+                    <IfLastModified age="60d">
+                        <IfAny>
+                            <IfAccumulatedFileSize exceeds="1 GB"/>
+                        </IfAny>
+                    </IfLastModified>
+                </Delete>
+            </DefaultRolloverStrategy>
+
+        </RollingFile>
+
+        <RollingFile name="RollingFile-Stateset-Appender"
+                     fileName="${log-path}/${log-name}-cordite.log"
+                     filePattern="${archive}/${log-name}.%d{yyyy-MM-dd}-%i.log.gz">
+
+            <PatternLayout pattern="[%-5level] %d{ISO8601}{GMT+0} [%t] %c{1} - %msg%n"/>
+
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="10MB"/>
+            </Policies>
+
+            <DefaultRolloverStrategy min="1" max="5">
+                <Delete basePath="${archive}" maxDepth="1">
+                    <IfFileName glob="${log-name}*.log.gz"/>
+                    <IfLastModified age="60d">
+                        <IfAny>
+                            <IfAccumulatedFileSize exceeds="1 GB"/>
+                        </IfAny>
+                    </IfLastModified>
+                </Delete>
+            </DefaultRolloverStrategy>
+
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="Console-Appender"/>
+            <AppenderRef ref="RollingFile-Appender"/>
+        </Root>
+        <Logger name="net.corda" level="info" additivity="false">
+            <AppenderRef ref="Console-Appender"/>
+            <AppenderRef ref="RollingFile-Appender"/>
+        </Logger>
+        <Logger name="io.cordite" level="info" additivity="false">
+            <AppenderRef ref="Console-Appender"/>
+            <AppenderRef ref="RollingFile-Appender"/>
+            <AppenderRef ref="RollingFile-Cordite-Appender"/>
+        </Logger>
+        <Logger name="net.corda.node.services.network.NetworkMapClient" level="trace" additivity="false">
+            <AppenderRef ref="RollingFile-Nmc-Appender"/>
+        </Logger>
+    </Loggers>
+
+</Configuration>

@@ -1,0 +1,321 @@
+buildscript {
+    ext {
+        artemis_version = "2.6.2"
+        corbeans_version = '0.22'
+        corda_release_group = 'net.corda'
+        corda_release_version = '4.0'
+        corda_gradle_plugins_version = '4.0.38'
+        kotlin_version = '1.2.71'
+        corda_platform_version = '4'
+        dependency_management_version ='1.0.6.RELEASE'
+        hibernate_version = '5.3.6.Final'
+        jackson_version = '2.9.5'
+        jcabi_manifests_version = '1.1'
+        junitVersion = '5.1.1'
+        junit_version = '5.1.1'
+        kotlinx_coroutines_version = '0.30.2'
+        quasar_version = '0.7.10'
+        scrudbeans_version = '0.13'
+        spring_boot_version = '2.1.5.RELEASE'
+        springfox_version = '2.9.2'
+        partiture_version = '0.5'
+        slf4j_version = '1.7.25'
+        log4j_version = '2.11.2'
+        tokens_release_version = '1.0'
+        tokens_release_group = 'com.r3.corda.lib.tokens'
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda' }
+        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-lib' }
+        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-lib-dev' }
+    }
+
+    dependencies {
+        classpath "net.corda.plugins:publish-utils:$corda_gradle_plugins_version"
+        classpath "net.corda.plugins:quasar-utils:$corda_gradle_plugins_version"
+        classpath "net.corda.plugins:cordformation:$corda_gradle_plugins_version"
+        classpath "net.corda.plugins:cordapp:$corda_gradle_plugins_version"
+        classpath "net.corda.plugins:api-scanner:$corda_gradle_plugins_version"
+
+        //open csv
+        classpath "com.opencsv:opencsv:5.0"
+
+
+        // spring plugins
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_version"
+        classpath "io.spring.gradle:dependency-management-plugin:$dependency_management_version"
+
+        // kotlin plugins
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-noarg:$kotlin_version"
+    }
+}
+
+allprojects {
+    apply plugin: 'kotlin'
+
+    repositories {
+        mavenLocal()
+        jcenter()
+        mavenCentral()
+        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-releases' }
+        maven { url 'https://jitpack.io' }
+    }
+
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
+        kotlinOptions {
+            languageVersion = "1.2"
+            apiVersion = "1.2"
+            jvmTarget = "1.8"
+            javaParameters = true   // Useful for reflection.
+        }
+    }
+
+    jar {
+        // This makes the JAR's SHA-256 hash repeatable.
+        preserveFileTimestamps = false
+        reproducibleFileOrder = true
+    }
+}
+
+apply plugin: 'net.corda.plugins.cordapp'
+apply plugin: 'net.corda.plugins.cordformation'
+apply plugin: 'net.corda.plugins.quasar-utils'
+
+sourceSets {
+    main {
+        resources {
+            srcDir rootProject.file("config/dev")
+        }
+    }
+}
+
+
+
+dependencies {
+    // Corda dependencies.
+    cordaCompile "$corda_release_group:corda-core:$corda_release_version"
+    cordaCompile "$corda_release_group:corda-node-api:$corda_release_version"
+    cordaRuntime "$corda_release_group:corda:$corda_release_version"
+
+    // CorDapp dependencies.
+    cordapp project(":workflows")
+    cordapp project(":contracts")
+
+    cordaCompile "org.apache.logging.log4j:log4j-slf4j-impl:${log4j_version}"
+    cordaCompile "org.apache.logging.log4j:log4j-web:${log4j_version}"
+    cordaCompile "org.slf4j:jul-to-slf4j:$slf4j_version"
+
+    // Cloud SQL Postgres Connector
+    compile 'com.google.cloud.sql:postgres-socket-factory:1.0.15'
+
+    // okta's helpful spring boot starter
+    compile('com.okta.spring:okta-spring-boot-starter:0.6.0')
+    // spring boot security
+    compile('org.springframework.boot:spring-boot-starter-security')
+    compile('com.opencsv:opencsv:5.0')
+}
+
+
+cordapp {
+    info {
+        name "Stateset"
+        vendor "Stateset, Inc."
+        targetPlatformVersion corda_platform_version.toInteger()
+        minimumPlatformVersion corda_platform_version.toInteger()
+    }
+}
+
+task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
+    directory "./build/nodes"
+    nodeDefaults {
+        projectCordapp {
+            deploy = false
+        }
+        cordapp project(":contracts")
+        cordapp project(":workflows")
+    }
+    node {
+        name "O=Notary,L=London,C=GB"
+        notary = [validating : true]
+        p2pPort 10002
+        rpcSettings {
+            address("localhost:10003")
+            adminAddress("localhost:10043")
+        }
+        //cordapps = []
+        extraConfig = ['h2Settings.address' : 'localhost:12344']
+    }
+    node {
+        name "O=PartyA,L=London,C=GB"
+        p2pPort 10005
+        rpcSettings {
+            address("localhost:10006")
+            adminAddress("localhost:10046")
+        }
+
+        webPort 8080
+        extraConfig = ['h2Settings.address' : 'localhost:12347']
+        webserverJar = "${rootProject.projectDir}/server/build/libs/server-${project.version}.jar"
+    }
+    node {
+        name "O=PartyB,L=New York,C=US"
+        p2pPort 10008
+        rpcSettings {
+            address("localhost:10009")
+            adminAddress("localhost:10049")
+        }
+        extraConfig = ['h2Settings.address' : 'localhost:12345']
+        rpcUsers = [[ user: "user1", "password": "test", "permissions": ["ALL"]]]
+    }
+    node {
+        name "O=PartyC,L=San Francisco,C=US"
+        p2pPort 10011
+        rpcSettings {
+            address("localhost:10012")
+            adminAddress("localhost:10052")
+        }
+        // Uncomment the following two lines to automatically launch a separate Spring Boot webserver per node
+        //webPort 10010
+        //webserverJar = "${rootProject.projectDir}/server/build/libs/server-${project.version}.jar"
+        //cordapps = []
+        //   extraConfig = [
+        ///            dataSourceProperties : [
+        //                    dataSourceClassName : "org.postgresql.ds.PGSimpleDataSource",
+        //                    'dataSource.url' : "postgresql://postgres:c4f6eedf6959f7b4c06228388e718f40@backend-6gds2aun.nhost.io:5702/postgres?sslmode=require" // var envVar: String = System.getenv("varname") ?: "default_value"
+        //            ],
+        //
+        //            database: [
+        //                   transactionIsolationLevel : "READ_COMMITTED"
+        //            ]
+        //    ]
+        extraConfig = ['h2Settings.address' : 'localhost:12346']
+        rpcUsers = [[ user: "user1", "password": "test", "permissions": ["ALL"]]]
+    }
+    node {
+        name "O=PartyD,L=Barcelona,C=ES"
+        p2pPort 10014
+        rpcSettings {
+            address("localhost:10015")
+            adminAddress("localhost:10055")
+        }
+        // Uncomment the following two lines to automatically launch a separate Spring Boot webserver per node
+        //webPort 10010
+        //webserverJar = "${rootProject.projectDir}/server/build/libs/server-${project.version}.jar"
+        //cordapps = []
+        //   extraConfig = [
+        ///            dataSourceProperties : [
+        //                    dataSourceClassName : "org.postgresql.ds.PGSimpleDataSource",
+        //                    'dataSource.url' : "postgresql://postgres:c4f6eedf6959f7b4c06228388e718f40@backend-6gds2aun.nhost.io:5702/postgres?sslmode=require" // var envVar: String = System.getenv("varname") ?: "default_value"
+        //            ],
+        //
+        //            database: [
+        //                   transactionIsolationLevel : "READ_COMMITTED"
+        //            ]
+        //    ]
+        extraConfig = ['h2Settings.address' : 'localhost:12348']
+        rpcUsers = [[ user: "user1", "password": "test", "permissions": ["ALL"]]]
+    }
+    node {
+        name "O=PartyE,L=Sao Paulo,C=BR"
+        p2pPort 10017
+        rpcSettings {
+            address("localhost:10018")
+            adminAddress("localhost:10058")
+        }
+        // Uncomment the following two lines to automatically launch a separate Spring Boot webserver per node
+        //webPort 10010
+        //webserverJar = "${rootProject.projectDir}/server/build/libs/server-${project.version}.jar"
+        //cordapps = []
+        //   extraConfig = [
+        ///            dataSourceProperties : [
+        //                    dataSourceClassName : "org.postgresql.ds.PGSimpleDataSource",
+        //                    'dataSource.url' : "postgresql://postgres:c4f6eedf6959f7b4c06228388e718f40@backend-6gds2aun.nhost.io:5702/postgres?sslmode=require" // var envVar: String = System.getenv("varname") ?: "default_value"
+        //            ],
+        //
+        //            database: [
+        //                   transactionIsolationLevel : "READ_COMMITTED"
+        //            ]
+        //    ]
+        extraConfig = ['h2Settings.address' : 'localhost:12349']
+        rpcUsers = [[ user: "user1", "password": "test", "permissions": ["ALL"]]]
+    }
+    node {
+        name "O=PartyF,L=Singapore,C=SG"
+        p2pPort 10020
+        rpcSettings {
+            address("localhost:10021")
+            adminAddress("localhost:10061")
+        }
+        // Uncomment the following two lines to automatically launch a separate Spring Boot webserver per node
+        //webPort 10010
+        //webserverJar = "${rootProject.projectDir}/server/build/libs/server-${project.version}.jar"
+        //cordapps = []
+        //   extraConfig = [
+        ///            dataSourceProperties : [
+        //                    dataSourceClassName : "org.postgresql.ds.PGSimpleDataSource",
+        //                    'dataSource.url' : "postgresql://postgres:c4f6eedf6959f7b4c06228388e718f40@backend-6gds2aun.nhost.io:5702/postgres?sslmode=require" // var envVar: String = System.getenv("varname") ?: "default_value"
+        //            ],
+        //
+        //            database: [
+        //                   transactionIsolationLevel : "READ_COMMITTED"
+        //            ]
+        //    ]
+        extraConfig = ['h2Settings.address' : 'localhost:12350']
+        rpcUsers = [[ user: "user1", "password": "test", "permissions": ["ALL"]]]
+    }
+    node {
+        name "O=PartyG,L=Berlin,C=DE"
+        p2pPort 10023
+        rpcSettings {
+            address("localhost:10024")
+            adminAddress("localhost:10064")
+        }
+        // Uncomment the following two lines to automatically launch a separate Spring Boot webserver per node
+        //webPort 10010
+        //webserverJar = "${rootProject.projectDir}/server/build/libs/server-${project.version}.jar"
+        //cordapps = []
+        //   extraConfig = [
+        ///            dataSourceProperties : [
+        //                    dataSourceClassName : "org.postgresql.ds.PGSimpleDataSource",
+        //                    'dataSource.url' : "postgresql://postgres:c4f6eedf6959f7b4c06228388e718f40@backend-6gds2aun.nhost.io:5702/postgres?sslmode=require" // var envVar: String = System.getenv("varname") ?: "default_value"
+        //            ],
+        //
+        //            database: [
+        //                   transactionIsolationLevel : "READ_COMMITTED"
+        //            ]
+        //    ]
+        extraConfig = ['h2Settings.address' : 'localhost:12351']
+        rpcUsers = [[ user: "user1", "password": "test", "permissions": ["ALL"]]]
+    }
+    node {
+        name "O=PartyH,L=Tokyo,C=JP"
+        p2pPort 10023
+        rpcSettings {
+            address("localhost:10027")
+            adminAddress("localhost:10067")
+        }
+        // Uncomment the following two lines to automatically launch a separate Spring Boot webserver per node
+        //webPort 10010
+        //webserverJar = "${rootProject.projectDir}/server/build/libs/server-${project.version}.jar"
+        //cordapps = []
+        //   extraConfig = [
+        ///            dataSourceProperties : [
+        //                    dataSourceClassName : "org.postgresql.ds.PGSimpleDataSource",
+        //                    'dataSource.url' : "postgresql://postgres:c4f6eedf6959f7b4c06228388e718f40@backend-6gds2aun.nhost.io:5702/postgres?sslmode=require" // var envVar: String = System.getenv("varname") ?: "default_value"
+        //            ],
+        //
+        //            database: [
+        //                   transactionIsolationLevel : "READ_COMMITTED"
+        //            ]
+        //    ]
+        extraConfig = ['h2Settings.address' : 'localhost:12352']
+        rpcUsers = [[ user: "user1", "password": "test", "permissions": ["ALL"]]]
+    }
+}
+

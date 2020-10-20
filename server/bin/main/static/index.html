@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html ng-app="MyApp">
+<head>
+    <meta charset="UTF-8">
+    <title>Baton Messenger</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css">
+    <script async = "defer" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDykId3k_x8d-5TtPUbVLYbTpfa1NVSM7w&callback=initMap" type="text/javascript"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" type="text/css" href="/assets/styles/salesforce-lightning-design-system.css" />
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-route.js"></script>
+
+
+</head>
+
+
+<style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: #FFFFFF;
+      }
+
+                   .slds-context-bar {
+                display: -ms-flexbox;
+                display: flex;
+                height: 2.5rem;
+                background-color: white;
+                border-bottom: #DA1A21;
+                color: #080707;
+                position: relative;
+                padding: 0 0 0 1.5rem;
+            }
+
+      #bottom_scrollview {
+        position: absolute;
+        padding-left: 20px;
+        padding-right: 20px;
+        bottom: 0px;
+        left: 0px;
+        right: 0px;
+        height: 0px;
+        overflow: scroll;
+        background-color: gray;
+        opacity: 0.5;
+      }
+      #inner_scroll {
+        height: 100%;
+        width: 300%;
+        display: flex;
+        flex-direction: row;
+        position: relative;
+      }
+
+          #parent{
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+#child{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: -17px; /* Increase/Decrease this value for cross-browser compatibility */
+    overflow-y: scroll;
+}
+
+    .App {
+      width: 100%;
+      max-width: 960px;
+      height: 300px;
+      margin: 0 auto;
+      display: flex;
+      border: .08px solid #ccc;
+      margin-top: 28px;
+      border-radius: 15px;
+      background-color: #F7F6F3;
+    }
+
+    .gm-scrollbar .thumb {
+    position: relative;
+    display: block;
+    width: 0;
+    height: 0;
+    cursor: pointer;
+    border-radius: inherit;
+    background-color: rgba(0,0,0,.2);
+}
+
+.gm-scrollbar.-vertical {
+    width: 6px;
+    transition: width 120ms ease-out ! important;
+}
+
+    ul {
+      list-style: none;
+    }
+
+    .sidebar {
+      flex-basis: 28%;
+      background-color: #F7F6F3;
+      color: #fff;
+      padding: 8px 28px;
+    }
+
+    .sidebar section {
+      margin-bottom: 20px;
+    }
+
+    .sidebar h2 {
+      margin-bottom: 10px;
+      color: #000;
+    }
+
+    .user-list li {
+      margin-bottom: 10px;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      color: #000;
+    }
+
+    .presence {
+      display: inline-block;
+      width: 28px;
+      height: 200px;
+      background-color: #F7F6F3;
+      color: #000;
+      margin-right: 10px;
+      border-radius: 50%;
+    }
+
+    .connected {
+    content: '';
+    width: 8px;
+    height: 8px;
+    display: inline-block;
+    border-radius: 100%;
+    background: #50e3c2;
+    margin-left: 10px;
+        }
+
+    .presence.online {
+    content: '';
+    width: 8px;
+    height: 8px;
+    display: inline-block;
+    border-radius: 100%;
+    background: #50e3c2;
+    margin-left: 10px;
+    }
+
+    .chat-window {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .chat-window > * {
+      padding: 10px 20px;
+    }
+
+    .chat-header, .chat-footer {
+      display: flex;
+      align-items: center;
+    }
+
+    .chat-header {
+      border-bottom: 1px solid #ccc;
+    }
+
+    .slds-docked-composer__header {
+
+    border-bottom: #DDDBDA;
+
+    }
+
+
+        b {
+      font-weight: normal;
+    }
+
+    .chat-session {
+      flex-grow: 1;
+      display: flex;
+      overflow: hidden;
+
+    }
+
+    .message-list {
+      flex-grow: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+     ::-webkit-scrollbar {
+    display: none;
+}
+
+    .user-message {
+      margin-top: 10px;
+    }
+
+    .user-message span {
+      display: block;
+    }
+
+        *:focus {
+    outline: none;
+}
+
+    .user-id {
+      font-weight: bold;
+      font-color: #000;
+      margin-bottom: 3px;
+    }
+
+    .chat-footer {
+      border-top: 1px solid #ccc;
+    }
+
+    .chat-footer form, .chat-footer input {
+      width: 100%;
+    </style>
+
+<script type="text/javascript">
+
+
+    var NODE_URL = 'http://localhost:8080/api/';
+    console.log(NODE_URL);
+
+
+        axios.defaults.headers.post['Content-Type'] = 'application/json';
+        axios.defaults.headers.post['Authorization'] = 'Negotiate';
+
+        var HTTPUtil = function(instanceConfig){
+            var self = this;
+
+
+            self.put = function(config){
+                var _url = config.url ? config.url : (instanceConfig && instanceConfig.url ? instanceConfig.url : defaulsConfig.url);
+                var _data = config.data;
+
+                return  axios.put(_url,_data);
+            }
+
+            self.get = function(config){
+                var _url = config.url ? config.url : (instanceConfig && instanceConfig.url ? instanceConfig.url : defaulsConfig.url);
+                var _data = config.data;
+
+                return  axios.get(_url,_data);
+            }
+
+            self.post = function(config){
+                var _url = config.url ? config.url : (instanceConfig && instanceConfig.url ? instanceConfig.url : defaulsConfig.url);
+                var _data = config.data;
+
+                return  axios.post(_url,_data);
+            }
+
+
+        }
+
+        var httpInstance = new HTTPUtil();
+
+
+
+                var decodeJSON = function(jsonStr){
+                  if(!jsonStr){
+                    return undefined;
+                  }
+                    return jsonStr.replace(/(&quot\;)/g,"\"")
+                }
+
+                var parseJSON = function(str){
+                    if(str==null || str == undefined || str == ''){
+                        return {};
+                    }
+                    else return JSON.parse(str);
+                }
+
+    var myApp = angular.module('MyApp',[]);
+    function MyController($scope,$timeout){
+
+
+    $scope.showAlert = false;
+    $scope.showActivate = false;
+    $scope.showChat = false;
+    $scope.showPayment = false;
+
+
+    $scope.showPaymentFn = function(sendType,methodName){
+    $scope.showPayment = true;
+    lastSendType = sendType;
+    lastMethodName = methodName;
+
+    }
+
+
+    $scope.showAlertFn = function(sendType,methodName){
+    $scope.showAlert = true;
+    lastSendType = sendType;
+    lastMethodName = methodName;
+
+    }
+
+
+    $scope.showActivateFn = function(sendType,methodName){
+    $scope.showActivate = true;
+    lastSendType = sendType;
+    lastMethodName = methodName;
+
+    }
+
+    $scope.showChatFn = function(sendType,methodName){
+    $scope.showChat = true;
+    lastSendType = sendType;
+    lastMethodName = methodName;
+
+    }
+
+    $scope.showUploadModal = function(sendType,methodName){
+    $scope.showUpload = true;
+    lastSendType = sendType;
+    lastMethodName = methodName;
+
+    }
+
+    $scope.msg = [];
+    $scope.addMsg = function(msg){
+           $scope.msg.push(msg);
+        }
+
+
+    $scope.message = '';
+    $scope.loadingApplications = false;
+
+        $scope.hideAlert  = function(){
+         $scope.showAlert = false;
+    }
+
+
+            $scope.hideActivate = function(){
+           $scope.showActivate = false;
+
+     }
+
+
+    $scope.hideChat = function(){
+        $scope.showChat = false;
+      }
+
+
+     $scope.hideUpload = function() {
+        $scope.showUpload = false;
+
+
+      }
+
+
+      $scope.getAgreements = function(){
+
+      $scope.loadingAgreements = true;
+      var getAgreementsPromise = httpInstance.get(
+            {
+                url: 'http://localhost:8080/api/getAgreements',
+                dataType: 'json',
+                method: 'GET'
+            }
+
+            );
+                getAgreementsPromise.then(function (response) {
+                    console.log(response);
+                    $scope.agreements = response.data;
+                    $scope.loadingAgreements = false;
+                    $scope.$apply();
+
+                    }).catch(function (error) {
+                    console.log(error);
+                    });
+
+                if($scope.agreements && $scope.agreements.length > 0){
+                    $scope.step = 'VIEW_AGREEMENTS';
+                }
+            }
+
+
+
+
+      $scope.getMe = function(){
+	  $scope.loadingMe = true;
+        var getMePromise = httpInstance.get(
+            {
+                url: 'http://localhost:8080/api/me',
+                dataType: 'json',
+                method: 'GET'
+            }
+
+            );
+                getMePromise.then(function (response) {
+                    console.log(response);
+                    $scope.me = response.data;
+                    $scope.loadingMe = false;
+                    $scope.$apply();
+
+                    }).catch(function (error) {
+                    console.log(error);
+                    });
+
+            }
+
+
+      $scope.getMessages = function(){
+	  $scope.loadingMessage = true;
+        var getMessagePromise = httpInstance.get(
+            {
+                url: 'http://localhost:8080/api/getMessages',
+                dataType: 'json',
+                method: 'GET'
+            }
+
+            );
+                getMessagePromise.then(function (response) {
+                    console.log(response);
+                    $scope.messages = response.data;
+                    $scope.loadingMessages = false;
+                    $scope.$apply();
+
+                    }).catch(function (error) {
+                    console.log(error);
+                    });
+
+            }
+
+
+      $scope.getPeers = function(){
+	  $scope.loadingPeers = true;
+        var getPeersPromise = httpInstance.get(
+            {
+                url: 'http://localhost:8080/api/peers',
+                dataType: 'json',
+                method: 'GET'
+            }
+
+            );
+                getPeersPromise.then(function (response) {
+                    console.log(response);
+                    $scope.peers = response.data;
+                    $scope.loadingPeers = false;
+                    $scope.$apply();
+
+                    }).catch(function (error) {
+                    console.log(error);
+                    });
+
+            }
+
+
+        $scope.sendChat = function(){
+        $scope.showTransferSpinner = true;
+        var createMessagePromise = httpInstance.post(
+        {
+            url: 'http://localhost:8080/api/sendChat?to=' + $scope.to + '&message=' + $scope.message,
+            dataType: 'json',
+            method: 'POST'
+        }
+
+        );
+
+          createMessagePromise.then(function (response) {
+              console.log(response);
+                 $scope.showTransferSpinner = false;
+                 $scope.$apply();
+                 $scope.message = '';
+                 $scope.to = '';
+                 $scope.showMessage = "Message sent.";
+                 $timeout(function(){
+                       $scope.getMessages();
+                    },2000);
+                  }).catch(function (error) {
+                    console.log(error);
+                    });
+
+    		}
+
+
+      // Create Agreement Function
+
+     $scope.createAgreement = function() {
+
+       var reqObj = {};
+        reqObj.accountId=$scope.accountId;
+        reqObj.agreementNumber=$scope.agreementNumber;
+        reqObj.agreementName=$scope.agreementName;
+        reqObj.agreementHash=$scope.agreementHash;
+        reqObj.agreementType=$scope.agreementType;
+        reqObj.agreementStatus=$scope.agreementStatus;
+        reqObj.totalAgreementValue=$scope.totalAgreementValue;
+        reqObj.counterpartyName=$scope.counterpartyName;
+        $scope.showTransferSpinner = true;
+
+       var dataStr = JSON.stringify(reqObj);
+
+       var createAgreementPromise = httpInstance.post(
+           {
+               url: 'http://localhost:8080/api/createAgreement?agreementNumber=' + $scope.agreementNumber + '&agreementName=' + $scope.agreementName + '&agreementStatus=' + $scope.agreementStatus + '&agreementType=' + $scope.agreementType + '&totalAgreementValue=' + $scope.totalAgreementValue + '&counterpartyName=' + $scope.counterpartyName + '&agreementHash=' + $scope.agreementHash,
+               dataType: 'json',
+               method: 'POST'
+           }
+
+           );
+              createAgreementPromise.then(function (response) {
+                	console.log(response);
+                    $scope.showTransferSpinner = false;
+					$scope.showMessage = "Success. Agreement created.";
+                    $scope.$apply();
+                    $scope.showAlert = false;
+                    $timeout(function(){
+                         $scope.getAgreements();
+                    },2000);
+                  }).catch(function (error) {
+                    console.log(error);
+                    });
+
+    		}
+
+
+       $scope.activateAgreement = function() {
+
+       var reqObj = {};
+       reqObj.agreementNumber=$scope.agreementNumber;
+       $scope.showTransferSpinner = true;
+
+       var dataStr = JSON.stringify(reqObj);
+
+       var activateAgreementPromise = httpInstance.post(
+           {
+               url: 'http://localhost:8080/api/activateAgreement?agreementNumber=' + $scope.agreementNumber,
+               dataType: 'json',
+               method: 'POST'
+           }
+
+           );
+              activateAgreementPromise.then(function (response) {
+                    console.log(response);
+                    $scope.showTransferSpinner = false;
+                    $scope.showMessage = "Success: "+ response.data;
+                    $scope.$apply();
+                  }).catch(function (error) {
+                    console.log(error);
+                    });
+
+            }
+
+
+
+
+      $scope.amendAgreement = function() {
+
+       var reqObj = {};
+       reqObj.agreementNumber=$scope.agreementNumber;
+       $scope.showTransferSpinner = true;
+
+       var dataStr = JSON.stringify(reqObj);
+
+       var amendAgreementPromise = httpInstance.post(
+           {
+               url: 'http://localhost:8080/api/amendAgreement?agreementNumber=' + $scope.agreementNumber,
+               dataType: 'json',
+               method: 'POST'
+           }
+
+           );
+              amendAgreementPromise.then(function (response) {
+                    console.log(response);
+                    $scope.showTransferSpinner = false;
+                    $scope.showMessage = "Success: "+ response.data;
+                    $scope.$apply();
+                  }).catch(function (error) {
+                    console.log(error);
+                    });
+
+            }
+
+
+
+
+       $scope.terminateAgreement = function() {
+
+       var reqObj = {};
+       reqObj.agreementNumber=$scope.agreementNumber;
+       $scope.showTransferSpinner = true;
+
+       var dataStr = JSON.stringify(reqObj);
+
+       var terminateAgreementPromise = httpInstance.post(
+           {
+               url: 'http://localhost:8080/api/terminateAgreement?agreementNumber=' + $scope.agreementNumber,
+               dataType: 'json',
+               method: 'POST'
+           }
+
+           );
+              terminateAgreementPromise.then(function (response) {
+                    console.log(response);
+                    $scope.showTransferSpinner = false;
+                    $scope.showMessage = "Success: "+ response.data;
+                    $scope.$apply();
+                  }).catch(function (error) {
+                    console.log(error);
+                    });
+
+            }
+
+
+
+     $scope.getMessages();
+     $scope.getAgreements();
+     $scope.getMe();
+
+
+
+    }
+
+      myApp.controller('MyController', MyController);
+
+
+
+    </script>
+
+</head>
+<body ng-controller="MyController">
+
+<div class="slds-page-header" style="background-color: #F7F6F3">
+    <div class="slds-media">
+        <div class="slds-media__body">
+            <h1 class="slds-page-header__title slds-truncate slds-align-middle">Baton Messenger</h1>
+            <p class="slds-text-body_small slds-line-height_reset">
+                ID: {{me}}
+            </p>
+        </div>
+        <div class="slds-page-header__control">
+            <ul class="slds-button-group-row">
+                <li class="slds-button-group-item">
+                    <button class="slds-button slds-button_neutral" ng-click="showPaymentFn('Transfer')">Send</button>
+                </li>
+                <li class="slds-button-group-item">
+                    <button class="slds-button slds-button_neutral" ng-click="showRequestFn('Transfer')">Request</button>
+                </li>
+                <li class="slds-button-group-item">
+                    <button class="slds-button slds-button_neutral" ng-click="showRequestFn('Transfer')">Link</button>
+                </li>
+                <li class="slds-button-group-item">
+                    <button class="slds-button slds-button_neutral" ng-click="showRequestFn('Transfer')">Respond to Collect Request</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+<div class="slds-progress-bar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="25" role="progressbar">
+  <span class="slds-progress-bar__value_success" style="width: 75%;">
+    <span class="slds-assistive-text">Progress: 25%</span>
+  </span>
+</div>
+<div class="slds-grid slds-gutters">
+</div>
+
+<div class="slds-grid slds-wrap">
+    <div class="slds-col slds-size_0-of-1 slds-medium-size_6-of-12 slds-large-size_2-of-12" style="padding-bottom:28px">
+
+        <div class="demo-only" style="width: 280px; background-color: #F7F6F3">
+            <nav class="slds-nav-vertical" aria-label="Sub page">
+                <br/>
+                <div class="slds-form-element slds-p-horizontal_large">
+                    <label class="slds-form-element__label slds-assistive-text" for="input-id-01">Filter navigation items</label>
+                    <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left">
+        <span class="slds-icon_container slds-icon-utility-search">
+          <svg class="slds-icon slds-input__icon slds-input__icon_right slds-icon-text-default" aria-hidden="true">
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#search" />
+          </svg>
+        </span>
+                        <input type="search" id="input-id-01" placeholder="Quick Find" class="slds-input" value="" />
+                    </div>
+                </div>
+                <div class="slds-nav-vertical__section">
+                    <h2 style="font-weight: bold" class="slds-nav-vertical__title">Messages</h2>
+                    <ul aria-describedby="entity-header">
+                        <li class="slds-nav-vertical__item"><a href="javascript:void(0);" class="slds-nav-vertical__action">Recent</a></li>
+                        <li class="slds-nav-vertical__item"><a href="javascript:void(0);" class="slds-nav-vertical__action">Created by Me</a></li>
+                        <li class="slds-nav-vertical__item"><a href="javascript:void(0);" class="slds-nav-vertical__action">Sent Messages</a></li>
+                        <li class="slds-nav-vertical__item"><a href="javascript:void(0);" class="slds-nav-vertical__action">Received Messages</a></li>
+                        <li class="slds-nav-vertical__item"><a href="javascript:void(0);" class="slds-nav-vertical__action">All Messages</a></li>
+                    </ul>
+                </div>
+                <div class="slds-nav-vertical__section">
+                    <h2 style="font-weight: bold" class="slds-nav-vertical__title">Attachments</h2>
+                    <ul aria-describedby="folder-header">
+                        <li class="slds-nav-vertical__item"><a href="http://127.0.0.1:8080/ipfs/QmXc9raDM1M5G5fpBnVyQ71vR4gbnskwnB9iMEzBuLgvoZ/#/files/" class="slds-nav-vertical__action">Created by Me</a></li>
+                        <li class="slds-nav-vertical__item"><a href="javascript:void(0);" class="slds-nav-vertical__action">Shared with Me</a></li>
+                        <div class="slds-form-element">
+                            <div class="slds-form-element__control" style="padding-left:8px">
+                                <div class="slds-file-selector slds-file-selector_files">
+                                    <div class="slds-file-selector__dropzone">
+                                        <input class="slds-file-selector__input slds-assistive-text" accept="image/png" type="file" id="file-upload-input-01" aria-labelledby="file-selector-primary-label file-selector-secondary-label" />
+                                        <label class="slds-file-selector__body" for="file-upload-input-01" id="file-selector-secondary-label">
+          <span class="slds-file-selector__button slds-button slds-button_neutral">
+            <svg class="slds-button__icon slds-button__icon_left" aria-hidden="true">
+              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#upload" />
+            </svg>Upload Files</span>
+                                            <span class="slds-file-selector__text slds-medium-show">or Drop Files</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <br/>
+                        <br/>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_10-of-12" style="padding-top:28px">
+        <div style="padding-left: 10px; padding-right: 10px">
+            <div class="" ng-show="!loadingApplications">
+                <br/>
+                <div class="slds-grid slds-grid_vertical">
+                    <div>
+                        <div class="slds-media slds-no-space slds-media_center">
+                            <div class="slds-media__figure">
+                                <div class="slds-icon_container slds-icon-standard-lead">
+                                    <svg class="slds-icon" aria-hidden="true">
+                                        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/assets/icons/standard-sprite/svg/symbols.svg#messaging_conversation"></use>
+                                    </svg>
+                                    <span class="slds-assistive-text">Messages</span>
+                                </div>
+                            </div>
+                            <div class="slds-media__body">
+                                <h1 class="slds-page-header__title slds-align-middle">My Messages</h1>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <br/>
+                <br/>
+                <div class="list-container" >
+                    <ul ng-repeat="message in messages" role="log" class="slds-chat-list">
+                        <li class="slds-chat-listitem">
+                            <div class="slds-chat-message">
+                                <div class="slds-chat-message__body">
+                                    <div class="slds-chat-message__text" style="margin-top: -28px; margin-bottom: -28px">
+                                        <span><a style="text-decoration: none; font-weight: bold; color: #1d1c1d">{{message.from}}</a> {{message.time}} </span>
+                                    </div>
+                                    <div class="slds-chat-message__meta" style="font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif; margin: 10px 0; font-size: 15px; margin-right: 30px; color: #000;">{{message.message}}</div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <br/><br/>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slds-docked_container slds-float_none" style="transition: border 0.1s linear, background-color 0.1s linear; height: 10%; background: #fff; color: #1d1c1d; padding: 0; overflow-y: hidden; overflow-x: hidden;v-webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; width: 1228px; padding-right: 1580px; padding-bottom: 28px; align: center">
+        <form>
+            <input placeholder=" To" type="text" ng-model="to" style="width: 260px;padding-bottom: 8px; padding-top: 8px; border: none; -webkit-box-shadow: inset 0 -1px 0 0 rgba(100,121,143,0.122); box-shadow: inset 0 -1px 0 0 rgba(100,121,143,0.122); line-height: 20px; min-height: auto; padding-left: 0; padding-right: 0;"/>
+            <br/>
+            <textarea ng-keyup="$event.keyCode == 13 ? sendChat() : null" class="slds-align_absolute-center" placeholder=" Message" style="padding-bottom: 28px; padding-right: 480px; width: 1228px ;overflow: auto; margin: 0; min-height: 42px; height: 38px; max-height: 180px; border: 1px solid #d0d4d9; border-radius: .375rem; outline: 0; background: #fff; resize: none; box-shadow: none; color: #1d1c1d; -webkit-user-select: auto; -moz-user-select: auto; -ms-user-select: auto; user-select: auto; padding: 9px 30px 10px 50px;" ng-model="message" />
+        </form>
+    </div>
+
+
+</div>
+
+
+<!--Baton Messenger Footer Modal-->
+
+<div class="slds-utility-bar__item slds-float_right" style="padding-left: 1000px">
+    <section ng-show="showChat" class="slds-docked-composer slds-grid slds-grid_vertical slds-is-open" role="dialog" aria-labelledby="dialog-heading-id-1" style="width:800px; height:400px;">
+        <div style="width:800px; height:400px; padding-right:28px" class="slds-utility-panel slds-grid slds-grid_vertical slds-is-open slds-float_right" role="dialog" aria-labelledby="panel-heading-01">
+            <header class="slds-docked-composer__header slds-grid slds-shrink-none" style="background-color: #404040" aria-live="assertive">
+                <div class="slds-media slds-media_center slds-no-space">
+                    <div class="slds-media__body">
+                        <h2 class="slds-truncate" id="dialog-heading-id-1" title="Header" style="color: #FFFFFF">Baton Messenger</h2>
+                    </div>
+                </div>
+                <div class="slds-col_bump-left slds-shrink-none">
+                    <button class="slds-button slds-button_icon slds-button_icon" ng-click="hideChat()" title="Minimize window">
+                        <svg class="slds-button__icon" aria-hidden="true">
+                            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#minimize_window" />
+                        </svg>
+                        <span class="slds-assistive-text">Minimize Composer Panel</span>
+                    </button>
+                    <button class="slds-button slds-button_icon slds-button_icon" title="Expand Composer">
+                        <svg class="slds-button__icon" aria-hidden="true">
+                            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#expand_alt" />
+                        </svg>
+                        <span class="slds-assistive-text">Expand Composer Panel</span>
+                    </button>
+                    <button class="slds-button slds-button_icon slds-button_icon" title="Close" ng-click="hideChat()">
+                        <svg class="slds-button__icon" aria-hidden="true">
+                            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#close" />
+                        </svg>
+                        <span class="slds-assistive-text">Close Composer Panel</span>
+                    </button>
+                </div>
+            </header>
+            <div class="slds-utility-panel__body">
+                <div class="App" style="background-color: #FFFFFF">
+                    <aside class="sidebar">
+                        <section ngIf="!currentUser" class="join-chat">
+                            <h2 style="bold">Network Members</h2>
+                        </section>
+                        <section class="online-members">
+                            <ul ng-repeat="peer in peers">
+                                <l1>{{peers}}</l1>
+                            </ul>
+                        </section>
+                    </aside>
+                    <div class="slds-grid slds-grid_vertical">
+                        <div class="slds-col">
+                            <div class="message" style="background-color: #FFFFFF; padding-left:8px">
+                                <button class="slds-button slds-button_brand slds-float_right" ng-click="sendChat()">
+                                    <svg class="slds-button__icon slds-button__icon_left slds-button__icon_small">
+                                        <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#send"></use>
+                                    </svg>Send
+                                </button>
+                                <img src="https://i.stack.imgur.com/pK4a5.gif" style="width:30px;" ng-show="showTransferSpinner"/>
+                                {{showMessage}}
+                                <form>
+                                    <input placeholder=" To" type="text" ng-model="to" id="message-counterparty" style="width: 260px;padding-bottom: 8px; padding-top: 8px; border: none; -webkit-box-shadow: inset 0 -1px 0 0 rgba(100,121,143,0.122); box-shadow: inset 0 -1px 0 0 rgba(100,121,143,0.122); line-height: 20px; min-height: auto; padding-left: 0; padding-right: 0;"/>
+                                    <br/>
+                                    <textarea placeholder="Message " type="text" ng-model="message" id="message-text" style="width: 580px; padding-bottom: 8px; padding-top: 8px; border: none; -webkit-box-shadow: inset 0 -1px 0 0 rgba(100,121,143,0.122); box-shadow: inset 0 -1px 0 0 rgba(100,121,143,0.122); line-height: 20px; min-height: auto; padding-left: 0; padding-right: 0;"/>
+                                    <br/>
+                                </form>
+                            </div>
+                            <div class="chats slds-col">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+<!--Signer Modal -->
+<div class="demo-only" style="min-height:640px;margin-top: 0px !important;" ng-show="showPayment">
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_medium">
+        <div class="slds-modal__container">
+            <header class="slds-modal__header">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" ng-click="hidePayment()">
+                    <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#close"></use>
+                    </svg>
+                    <span class="slds-assistive-text" >Close</span>
+                </button>
+                <table>
+                    <tr>
+                        <td style="max-width: 17px;">
+                    <span class="slds-icon_container slds-icon-custom-custom5" title="Description of icon when needed">
+                      <svg class="slds-icon slds-icon_large" aria-hidden="true">
+                        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#money"></use>
+                      </svg>
+                      <span class="slds-assistive-text">Description of icon</span>
+                    </span>
+                        </td>
+                        <td>
+                            <h2 id="modal-heading-01" style="padding-left:17px" class="slds-text-heading_small slds-hyphenate">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;New Payment</h2>
+                            <p class="slds-text-body_small slds-line-height_reset" style="padding-left:17px">
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Create a New Payment
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+
+            </header>
+            <form style="padding-left:8px; padding-right:8px; padding-top:28px; padding-bottom:28px" class="slds-card" name="account wizard">
+                <div class="slds-form-element">
+                    <label class="slds-form-element__label">Payee VPA: </label>
+                    <input type="text" name="firstName" class="slds-input slds-combobox__input" ng-model="payee" />
+                </div>
+
+                <div class="slds-form-element">
+                    <label class="slds-form-element__label">Payment Amount: </label>
+                    <input type="text" name="firstName" class="slds-input slds-combobox__input" ng-model="paymentAmount" />
+                </div>
+
+                <div class="slds-form-element">
+                    <label class="slds-form-element__label">Payment Description: </label>
+                    <input type="text" name="firstName" class="slds-input slds-combobox__input" ng-model="description" />
+                </div>
+
+
+                <br/>
+
+            </form>
+
+            <footer class="slds-modal__footer">
+                <button class="slds-button slds-button_neutral" ng-click="hidePayment()">Cancel</button>
+                <button  class="slds-button slds-button--brand" ng-click="sendPayment()">Send</button>
+                <img src="https://i.stack.imgur.com/pK4a5.gif" style="width:30px;" ng-show="showTransferSpinner"/>
+                {{showMessage}}
+            </footer>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</div>
+
+
+
+</body>
+</html>
