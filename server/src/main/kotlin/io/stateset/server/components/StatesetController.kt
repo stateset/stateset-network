@@ -2078,7 +2078,7 @@ class StatesetController() {
 
 /** Send UPI Payment */
 
-@CrossOrigin(origins = ["https://dapps.ngrok.io", "https://dsoa.network", "https://app.stateset.io", "https://shopify.stateset.io", "https://halocollar.stateset.io", "https://saaspartners.stateset.io", "https://riggsandporter.stateset.io", "https://integrityfirst.stateset.io", "https://jurrutia.stateset.io", "https://demo.stateset.io",  "https://behir.stateset.io", "https://bluebear.stateset.io", "https://ecoy.stateset.io", "https://sukhi.stateset.io", "https://shahi.stateset.io", "https://syndicate.stateset.io", "https://polrlake.stateset.io", "https://tangerine.stateset.io",  "https://cimed.stateset.io", "https://embraer.stateset.io", "https://adapt.stateset.io", "https://dapps.stateset.io", "https://magiadasvelas.stateset.io",  "https://saasteps.stateset.io", "https://saasteps.lightning.force.com", "https://na110.lightning.force.com", "https://dsoa.na110.visual.force.com", "https://stateset.in"])
+@CrossOrigin(origins = ["http://localhost:8080"])
 @PostMapping(value = "/pay")
 fun sendPayment(@RequestParam("pa") pa: String,
                 @RequestParam("pn") pn: String,
@@ -2124,7 +2124,7 @@ fun sendPayment(@RequestParam("pa") pa: String,
 
 /** Send Proxy Re-encryption Policy */
 
-@CrossOrigin(origins = ["https://dapps.ngrok.io", "https://dsoa.network", "https://app.stateset.io", "https://shopify.stateset.io", "https://halocollar.stateset.io", "https://saaspartners.stateset.io", "https://riggsandporter.stateset.io", "https://integrityfirst.stateset.io", "https://jurrutia.stateset.io", "https://demo.stateset.io",  "https://behir.stateset.io", "https://bluebear.stateset.io", "https://ecoy.stateset.io", "https://sukhi.stateset.io", "https://shahi.stateset.io", "https://syndicate.stateset.io", "https://polrlake.stateset.io", "https://tangerine.stateset.io",  "https://cimed.stateset.io", "https://embraer.stateset.io", "https://adapt.stateset.io", "https://dapps.stateset.io", "https://magiadasvelas.stateset.io",  "https://saasteps.stateset.io", "https://saasteps.lightning.force.com", "https://na110.lightning.force.com", "https://dsoa.na110.visual.force.com", "https://stateset.in"])
+@CrossOrigin(origins = ["http://localhost:8080"])
 @PostMapping(value = "/policy")
 fun sendPolicy(@RequestParam("alice") alice: String,
             @RequestParam("enrico") enrico: String,
@@ -2169,7 +2169,7 @@ return ResponseEntity<Any?>(message, status)
 
     /** Send UPI Payment */
 
-    @CrossOrigin(origins = ["https://dapps.ngrok.io", "https://dsoa.network", "https://app.stateset.io", "https://shopify.stateset.io", "https://halocollar.stateset.io", "https://saaspartners.stateset.io", "https://riggsandporter.stateset.io", "https://integrityfirst.stateset.io", "https://jurrutia.stateset.io", "https://demo.stateset.io",  "https://behir.stateset.io", "https://bluebear.stateset.io", "https://ecoy.stateset.io", "https://sukhi.stateset.io", "https://shahi.stateset.io", "https://syndicate.stateset.io", "https://polrlake.stateset.io", "https://tangerine.stateset.io",  "https://cimed.stateset.io", "https://embraer.stateset.io", "https://adapt.stateset.io", "https://dapps.stateset.io", "https://magiadasvelas.stateset.io",  "https://saasteps.stateset.io", "https://saasteps.lightning.force.com", "https://na110.lightning.force.com", "https://dsoa.na110.visual.force.com", "https://stateset.in"])
+    @CrossOrigin(origins = ["http://localhost:8080"])
     @PostMapping(value = "/pay")
     fun sendPayment(@RequestParam("pa") pa: String,
                     @RequestParam("pn") pn: String,
@@ -2215,7 +2215,7 @@ return ResponseEntity<Any?>(message, status)
 
 /** Send Proxy Re-encryption Policy */
 
-@CrossOrigin(origins = ["https://dapps.ngrok.io", "https://dsoa.network", "https://app.stateset.io", "https://shopify.stateset.io", "https://halocollar.stateset.io", "https://saaspartners.stateset.io", "https://riggsandporter.stateset.io", "https://integrityfirst.stateset.io", "https://jurrutia.stateset.io", "https://demo.stateset.io",  "https://behir.stateset.io", "https://bluebear.stateset.io", "https://ecoy.stateset.io", "https://sukhi.stateset.io", "https://shahi.stateset.io", "https://syndicate.stateset.io", "https://polrlake.stateset.io", "https://tangerine.stateset.io",  "https://cimed.stateset.io", "https://embraer.stateset.io", "https://adapt.stateset.io", "https://dapps.stateset.io", "https://magiadasvelas.stateset.io",  "https://saasteps.stateset.io", "https://saasteps.lightning.force.com", "https://na110.lightning.force.com", "https://dsoa.na110.visual.force.com", "https://stateset.in"])
+@CrossOrigin(origins = ["http://localhost:8080"])
 @PostMapping(value = "/policy")
 fun sendPolicy(@RequestParam("alice") alice: String,
                 @RequestParam("enrico") enrico: String,
