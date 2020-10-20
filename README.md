@@ -35,7 +35,7 @@ Stateset is a distributed b2b sales and finance network for commerce.
 
 Stateset Network is running and can be leveraged using the app.stateset.io interface. If you would like to add your node to network or contribute to the Stateset Network please reach out to dom@stateset.io
 
-The following is instructions on how to build and deploy Stateset. The network works on locally on your machine or in a VM on AWS, GCP, Azure.
+The following is instructions on how to build and deploy Stateset. The network works locally on your machine or in a VM on AWS, GCP or Azure.
 
 1) Install and Build the Stateset Network locally via Git:
 
