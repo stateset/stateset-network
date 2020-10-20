@@ -2,6 +2,8 @@
 
 Stateset is a distributed b2b sales and finance network for commerce.
 
+Stateset is a global network of nodes for enterprise-grade, real-time transactions and asset workflows. It is a platform for developing the next-generation of enterprise software where state and processes can be shared and uniform across multiple trusted entities leading to operational efficiency, speed and better customer experiences. What does the Business-to-Business enterprise space look like when there is a real-time network for shared processes, state and transfer of value. globally reachable like a next gen Bloomberg but not just for trades and messaging but for any front-office, middle-office or back-office application. The future state is that there is much more secure, automated and deterministic business process based; assets and value flow freely across the business network and are interoperable with other sector specific business networks.
+
 ```
 	   8 Node Network Graph | 28 Edges | 1 Notary
 -------------------------------------------------------------------
@@ -33,9 +35,11 @@ Stateset is a distributed b2b sales and finance network for commerce.
 ### Stateset Network Setup
 
 
-Stateset Network is running and can be leveraged using the app.stateset.io interface. If you would like to add your node to network or contribute to the Stateset Network please reach out to dom@stateset.io
+Stateset Network is running 28 nodes and can be leveraged using the app.stateset.io interface. If you would like to add your node to network or contribute to the Stateset Network please reach out to dom@stateset.io
 
-The following is instructions on how to build and deploy Stateset. The network works locally on your machine or in a VM on AWS, GCP or Azure.
+The following is instructions on how to build and deploy Stateset for development.
+
+The network works locally on your machine or in a VM on AWS, GCP or Azure.
 
 1) Install and Build the Stateset Network locally via Git:
 
