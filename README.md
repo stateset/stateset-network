@@ -54,7 +54,6 @@ cd stateset && gradlew.bat deployNodes (Windows) OR ./gradlew deployNodes (Linux
 
 ```bash
 
-cd workflows
 cd build 
 cd nodes
 runnodes.bat (Windows) OR ./runnodes (Linux)
@@ -86,7 +85,7 @@ Configuration
 
 ### Network States
 
-Customer States are transferred between stakeholders on the network.
+B2B Sales and Finance States are transferred between organizations on the network.
 
 #### Accounts
 
