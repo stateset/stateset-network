@@ -137,8 +137,8 @@ data class Account(val accountId: String,
 
 The Account has the following business `flows` that can be called:
 
-- `CreateAccount` - Create an Account between your organization and a known counterparty on the DSOA
-- `TransferAccount` - Transfer the Account between your organization and a counterparty on the DSOA
+- `CreateAccount` - Create an Account between your organization and a known counterparty on the Stateset
+- `TransferAccount` - Transfer the Account between your organization and a counterparty on the Stateset
 - `ShareAccount` - Share the Account Data with a counterparty
 - `EraseAccount` - Erase the Account Data
 
@@ -167,8 +167,8 @@ data class Contact(val contactId: String,
 
 The Contact has the following business `flows` that can be called:
 
-- `CreateContact` - Create a Contact between your organization and a known counterparty on the DSOA
-- `TransferContact` - Transfer the Contact between your organization and a counterparty on the DSOA
+- `CreateContact` - Create a Contact between your organization and a known counterparty on the Stateset
+- `TransferContact` - Transfer the Contact between your organization and a counterparty on the Stateset
 - `ShareContact` - Share the Contact Data with a counterparty
 - `EraseContact` - Erase the Contact Data
 
@@ -200,8 +200,8 @@ data class Lead(val leadId: String,
 
 The Lead has the following business `flows` that can be called:
 
-- `CreateLead` - Create a Lead between your organization and a known counterparty on the DSOA
-- `TransferLead` - Transfer the Lead between your organization and a counterparty on the DSOA
+- `CreateLead` - Create a Lead between your organization and a known counterparty on the Stateset
+- `TransferLead` - Transfer the Lead between your organization and a counterparty on the Stateset
 - `ShareLead` - Share the Lead Data with a counterparty
 - `EraseLead` - Erase the Lead Data
 - `ConvertLead` - Convert a Lead State into an Account State and Contact State
@@ -233,7 +233,7 @@ data class Case(val caseId: String,
 
 The Case has the following business `flows` that can be called:
 
-- `CreateCase` - Create a Case between your organization and a known counterparty on the DSOA
+- `CreateCase` - Create a Case between your organization and a known counterparty on the Stateset
 - `StartCase` - Start on an unstarted Case
 - `CloseCase` - Close the Case with a counterparty
 - `EscalateCase` - Escalate the Case
@@ -319,8 +319,8 @@ data class Agreement(val agreementNumber: String,
 
 The Agreement has the following business `flows` that can be called:
 
-- `CreateAgreement` - Create an Agreement between your organization and a known counterparty on the DSOA
-- `ActivateAgreement` - Activate the Agreement between your organization and a counterparty on the DSOA
+- `CreateAgreement` - Create an Agreement between your organization and a known counterparty on the Stateset
+- `ActivateAgreement` - Activate the Agreement between your organization and a counterparty on the Stateset
 - `TerminateAgreement` - Terminate an existing or active agreement
 - `RenewAgreement` - Renew an existing agreement that is or is about to expire
 - `ExpireAgreement` - Expire a currently active agreement between you and a counterparty
