@@ -33,11 +33,17 @@ Stateset is a distributed b2b sales and finance network for commerce.
 ### Stateset Network Setup
 
 
-1) Install the Stateset Network locally via Git:
+Stateset Network is running and can be leveraged using the app.stateset.io interface. If you would like to add your node to network or contribute to the Stateset Network please reach out to dom@stateset.io
+
+The following is instructions on how to build and deploy Stateset. The network works on locally on your machine or in a VM on AWS, GCP, Azure.
+
+1) Install and Build the Stateset Network locally via Git:
 
 ```bash
 
 git clone https://github.com/stateset/stateset-network
+cd stateset
+gradle clean build -Dsigning.enabled=false
 
 ```
 
@@ -46,7 +52,7 @@ git clone https://github.com/stateset/stateset-network
 
 ```bash
 
-cd stateset && gradlew.bat deployNodes (Windows) OR ./gradlew deployNodes (Linux)
+cd stateset && gradlew.bat deployNodes -Dsigning.enabled=false (Windows) OR ./gradlew deployNodes (Linux)
 
 ```
 
@@ -72,6 +78,19 @@ cd server
 The Stateset Network API Swagger will be running at `http://localhost:8080/swagger-ui.html#/`
 
 To change the name of your `organisation` or any other parameters, edit the `node.conf` file and repeat the above steps.
+
+
+5) Kill Nodes 
+
+```bash
+
+taskkill /f /im java.exe (windows) OR  kill -9 $(ps -ef | pgrep -f "java") (Linux)
+
+```
+
+
+
+
 
 #### Node Configuration
 
