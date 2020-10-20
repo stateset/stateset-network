@@ -1,6 +1,6 @@
 # Stateset
 
-Stateset is a financial network for digital commerce working capital automation.
+Stateset is a distributed b2b sales and finance network for commerce.
 
 ```
 	   8 Node Network Graph | 28 Edges | 1 Notary
@@ -37,7 +37,7 @@ Stateset is a financial network for digital commerce working capital automation.
 
 ```bash
 
-git clone https://gitlab.com/stateset/stateset-cordapp
+git clone https://github.com/stateset/stateset-network
 
 ```
 
@@ -73,48 +73,6 @@ cd server
 The Stateset Network API Swagger will be running at `http://localhost:8080/swagger-ui.html#/`
 
 To change the name of your `organisation` or any other parameters, edit the `node.conf` file and repeat the above steps.
-
-### Joining the Network
-
-Add the following to the `node.conf` file:
-
-`compatibilityZoneUrl="https://stateset.network:8080"`
-
-This is the current network map and doorman server URL
-
-1) Remove Existing Network Parameters and Certificates
-
-```bash
-
-cd build
-cd nodes
-cd PartyA
-rm -rf persistence.mv.db nodeInfo-* network-parameters certificates additional-node-infos
-
-```
-
-2) Download the Network Truststore
-
-```bash
-
-curl -o /var/tmp/network-truststore.jks https://stateset.network:8080//network-map/truststore
-
-```
-
-3) Initial Node Registration
-
-```bash
-
-java -jar corda.jar --initial-registration --network-root-truststore /var/tmp/network-truststore.jks --network-root-truststore-password trustpass
-
-```
-4) Start the Node
-
-```bash
-
-java -jar corda.jar
-
-```
 
 #### Node Configuration
 
