@@ -269,8 +269,8 @@ class StatesetController() {
                 "company" to company,
                 "title" to title,
                 "email" to email,
-		        "title" to title,
-		        "company" to company,
+		"title" to title,
+		"company" to company,
                 "country" to country,
                 "phone" to phone,
                 "rating" to rating.toString(),
@@ -515,7 +515,7 @@ class StatesetController() {
 
     /** Returns a list of existing Proposals. */
 
-   @CrossOrigin(origins = ["http://localhost:8080"])
+    @CrossOrigin(origins = ["http://localhost:8080"])
     @GetMapping(value = "/getProposals")
     @ApiOperation(value = "Get Proposals")
     fun getProposals(@PathVariable nodeName: Optional<String>): List<Map<String, String>> {
@@ -526,7 +526,7 @@ class StatesetController() {
 
     /** Returns a list of existing Purchase Orders. */
 
-   @CrossOrigin(origins = ["http://localhost:8080"])
+    @CrossOrigin(origins = ["http://localhost:8080"])
     @GetMapping(value = "/getPurchaseOrders")
     @ApiOperation(value = "Get Purchase Orders")
     fun getPurchaseOrders(@PathVariable nodeName: Optional<String>): List<Map<String, String>> {
@@ -597,7 +597,7 @@ class StatesetController() {
 
     /** Returns a list of existing Invoices */
 
-   @CrossOrigin(origins = ["http://localhost:8080"])
+    @CrossOrigin(origins = ["http://localhost:8080"])
     @GetMapping(value = "/getInvoices")
     @ApiOperation(value = "Get Invoices")
     fun getInvoices(@PathVariable nodeName: Optional<String>): List<Map<String, String>> {
@@ -609,7 +609,7 @@ class StatesetController() {
 
     /** Returns a list of existing Loans. */
 
-   @CrossOrigin(origins = ["http://localhost:8080"])
+    @CrossOrigin(origins = ["http://localhost:8080"])
     @GetMapping(value = "/getLoans")
     @ApiOperation(value = "Get Loans")
     fun getLoans(@PathVariable nodeName: Optional<String>): List<Map<String, String>> {
@@ -621,7 +621,7 @@ class StatesetController() {
 
     /** Returns a list of existing Products. */
 
-   @CrossOrigin(origins = ["http://localhost:8080"])
+    @CrossOrigin(origins = ["http://localhost:8080"])
     @GetMapping(value = "/getProducts")
     @ApiOperation(value = "Get Products")
     fun getProducts(@PathVariable nodeName: Optional<String>): List<Map<String, String>> {
@@ -1313,7 +1313,7 @@ class StatesetController() {
 
     /** Returns a list of existing Agreements. */
 
-   @CrossOrigin(origins = ["http://localhost:8080"])
+    @CrossOrigin(origins = ["http://localhost:8080"])
     @GetMapping(value = "/getAgreements")
     @ApiOperation(value = "Get Agreements")
     fun getAgreements(@PathVariable nodeName: Optional<String>): List<Map<String, String>> {
@@ -1323,7 +1323,7 @@ class StatesetController() {
     }
 
 
-   @CrossOrigin(origins = ["http://localhost:8080"])
+    @CrossOrigin(origins = ["http://localhost:8080"])
     @GetMapping(value = "/getAllAgreements")
     @ApiOperation(value = "Get All Agreements")
     fun agreements(@PathVariable nodeName: Optional<String>): List<Agreement> {
@@ -1353,7 +1353,7 @@ class StatesetController() {
     /** Creates a Proposal. */
 
 
-   @CrossOrigin(origins = ["http://localhost:8080"])
+    @CrossOrigin(origins = ["http://localhost:8080"])
     @PostMapping(value = "/createProposal")
     @ApiOperation(value = "Create Proposal")
     fun createProposal(@PathVariable nodeName: Optional<String>,
@@ -1407,7 +1407,7 @@ class StatesetController() {
 
     /** Accept Proposal. */
 
-   @CrossOrigin(origins = ["http://localhost:8080"])
+    @CrossOrigin(origins = ["http://localhost:8080"])
     @PostMapping(value = "/acceptProposal")
     @ApiOperation(value = "Accept Proposal")
     fun acceptProposal(@PathVariable nodeName: Optional<String>, @RequestParam("proposalNumber") proposalNumber: String, request: HttpServletRequest): ResponseEntity<Any?> {
@@ -1431,7 +1431,7 @@ class StatesetController() {
 
     /** Reject Proposal  */
 
-   @CrossOrigin(origins = ["http://localhost:8080"])
+    @CrossOrigin(origins = ["http://localhost:8080"])
     @PostMapping(value = "/rejectProposal")
     @ApiOperation(value = "Reject Proposal")
     fun rejectProposal(@PathVariable nodeName: Optional<String>, @RequestParam("proposalNumber") proposalNumber: String, request: HttpServletRequest): ResponseEntity<Any?> {
@@ -1456,7 +1456,7 @@ class StatesetController() {
     /** Creates a Purchase Order. */
 
 
-   @CrossOrigin(origins = ["http://localhost:8080"])
+    @CrossOrigin(origins = ["http://localhost:8080"])
     @PostMapping(value = "/createPurchaseOrder")
     @ApiOperation(value = "Create Purchase Order")
     fun createPurchaseOrder(@PathVariable nodeName: Optional<String>,
@@ -1596,7 +1596,7 @@ class StatesetController() {
     /** Searchable PDF is mapped by agreement linearId **/
     /** Endpoint setup in BaaR OCR tool and State is created **/
 
-   @CrossOrigin(origins = ["http://localhost:8080"])
+    @CrossOrigin(origins = ["http://localhost:8080"])
     @PostMapping(value = "/createAgreement")
     @ApiOperation(value = "Create Agreement")
     fun createAgreement(@PathVariable nodeName: Optional<String>,
@@ -1649,7 +1649,7 @@ class StatesetController() {
 
 
     /** Activate Agreement. */
-   @CrossOrigin(origins = ["http://localhost:8080"])
+    @CrossOrigin(origins = ["http://localhost:8080"])
     @PostMapping(value = "/activateAgreement")
     @ApiOperation(value = "Activate Agreement")
     fun activateAgreement(@PathVariable nodeName: Optional<String>, @RequestParam("agreementNumber") agreementNumber: String, request: HttpServletRequest): ResponseEntity<Any?> {
@@ -1672,7 +1672,7 @@ class StatesetController() {
 
 
     /** Terminate Agreement. */
-   @CrossOrigin(origins = ["http://localhost:8080"])
+    @CrossOrigin(origins = ["http://localhost:8080"])
     @PostMapping(value = "/terminateAgreement")
     @ApiOperation(value = "Terminate Agreement")
     fun terminateAgreement(@PathVariable nodeName: Optional<String>, @RequestParam("agreementNumber") agreementNumber: String, request: HttpServletRequest): ResponseEntity<Any?> {
@@ -1695,7 +1695,7 @@ class StatesetController() {
 
 
     /** Renew Agreement. */
-   @CrossOrigin(origins = ["http://localhost:8080"])
+    @CrossOrigin(origins = ["http://localhost:8080"])
     @PostMapping(value = "/renewAgreement")
     @ApiOperation(value = "Renew Agreement")
     fun renweAgreement(@PathVariable nodeName: Optional<String>, @RequestParam("agreementNumber") agreementNumber: String, request: HttpServletRequest): ResponseEntity<Any?> {
@@ -1718,7 +1718,7 @@ class StatesetController() {
 
 
     /** Amend Agreement. */
-   @CrossOrigin(origins = ["http://localhost:8080"])
+    @CrossOrigin(origins = ["http://localhost:8080"])
     @PostMapping(value = "/amendAgreement")
     @ApiOperation(value = "Amend Agreement")
     fun amendAgreement(@PathVariable nodeName: Optional<String>, @RequestParam("agreementNumber") agreementNumber: String, request: HttpServletRequest): ResponseEntity<Any?> {
@@ -1741,7 +1741,7 @@ class StatesetController() {
 
 
     /** Upload the File. */
-   @CrossOrigin(origins = ["http://localhost:8080"])
+    @CrossOrigin(origins = ["http://localhost:8080"])
     @PostMapping(value = "/upload")
     @ApiOperation(value = "Upload Agreement")
     fun upload(@PathVariable nodeName: Optional<String>, @RequestParam file: MultipartFile, @RequestParam uploader: String): ResponseEntity<String> {
@@ -1781,7 +1781,7 @@ class StatesetController() {
 
 
     /** Download the File. */
-   @CrossOrigin(origins = ["http://localhost:8080"])
+    @CrossOrigin(origins = ["http://localhost:8080"])
     @GetMapping(value = "/download")
     @ApiOperation(value = "Download Agreement")
     fun downloadByName(@PathVariable nodeName: Optional<String>, @RequestParam name: String): ResponseEntity<InputStreamResource> {
@@ -1824,7 +1824,7 @@ class StatesetController() {
     /** Searchable PDF is mapped by invoice linearId **/
     /** Endpoint setup in BaaR OCR tool and State is created **/
 
-   @CrossOrigin(origins = ["http://localhost:8080"])
+    @CrossOrigin(origins = ["http://localhost:8080"])
     @PostMapping(value = "/createInvoice")
     @ApiOperation(value = "Create Invoice")
     fun createInvoice(@PathVariable nodeName: Optional<String>,
@@ -1945,7 +1945,7 @@ class StatesetController() {
     }
 
 
-   @CrossOrigin(origins = ["http://localhost:8080"])
+    @CrossOrigin(origins = ["http://localhost:8080"])
     @PostMapping(value = "/createLoan")
     @ApiOperation(value = "Create Loan")
     fun createLoan(@PathVariable nodeName: Optional<String>,
